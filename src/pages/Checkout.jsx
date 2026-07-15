@@ -5,6 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// 🔥 API Base URL – uses environment variable or falls back to local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const Checkout = () => {
   const { cartItems, getTotalPrice, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
@@ -125,7 +128,8 @@ const Checkout = () => {
         config.headers = { Authorization: `Bearer ${token}` };
       }
 
-      const response = await axios.post('http://localhost:5000/api/orders', orderPayload, config);
+      // 🔥 Use dynamic API base URL
+      const response = await axios.post(`${API_BASE_URL}/orders`, orderPayload, config);
       setOrderId(response.data.order._id);
       setOrderPlaced(true);
       clearCart();

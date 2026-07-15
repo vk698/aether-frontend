@@ -5,6 +5,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import CancelOrderModal from '../components/CancelOrderModal';
 
+// 🔥 API Base URL – uses environment variable or falls back to local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const OrderHistory = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -58,7 +61,8 @@ const OrderHistory = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/api/auth/orders', {
+        // 🔥 Use dynamic API base URL
+        const response = await axios.get(`${API_BASE_URL}/auth/orders`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOrders(response.data);
@@ -91,7 +95,8 @@ const OrderHistory = () => {
       const payload = { email: user.email, reason };
       if (user.phone) payload.phone = user.phone;
 
-      await axios.patch(`http://localhost:5000/api/orders/${selectedOrderId}/cancel`, payload);
+      // 🔥 Use dynamic API base URL
+      await axios.patch(`${API_BASE_URL}/orders/${selectedOrderId}/cancel`, payload);
       setSuccess('Order cancelled successfully!');
       setOrders(orders.map(order =>
         order._id === selectedOrderId

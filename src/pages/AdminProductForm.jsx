@@ -3,6 +3,9 @@ import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
+// 🔥 API Base URL – uses environment variable or falls back to local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 // Cloudinary Config
 const CLOUD_NAME = 'i7kx6ig5';
 const UPLOAD_PRESET = 'saree_uploads';
@@ -50,7 +53,7 @@ const AdminProductForm = () => {
         return;
       }
       try {
-        const response = await axios.get(`http://localhost:5000/api/admin/products/${id}`, {
+        const response = await axios.get(`${API_BASE_URL}/admin/products/${id}`, {
           headers: { 'x-admin-key': token }
         });
         const p = response.data;
@@ -143,11 +146,11 @@ const AdminProductForm = () => {
     try {
       let response;
       if (isEdit) {
-        response = await axios.put(`http://localhost:5000/api/admin/products/${id}`, payload, {
+        response = await axios.put(`${API_BASE_URL}/admin/products/${id}`, payload, {
           headers: { 'x-admin-key': token }
         });
       } else {
-        response = await axios.post('http://localhost:5000/api/admin/products', payload, {
+        response = await axios.post(`${API_BASE_URL}/admin/products`, payload, {
           headers: { 'x-admin-key': token }
         });
       }

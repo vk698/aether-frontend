@@ -4,6 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Pencil, Trash2, PlusCircle } from 'lucide-react';
 
+// 🔥 API Base URL – uses environment variable or falls back to local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +24,7 @@ const AdminProducts = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/admin/products', {
+        const response = await axios.get(`${API_BASE_URL}/admin/products`, {
           headers: { 'x-admin-key': token }
         });
         setProducts(response.data);
@@ -46,7 +49,7 @@ const AdminProducts = () => {
     if (!token) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/products/${id}`, {
+      await axios.delete(`${API_BASE_URL}/admin/products/${id}`, {
         headers: { 'x-admin-key': token }
       });
       setProducts(products.filter(p => p._id !== id));

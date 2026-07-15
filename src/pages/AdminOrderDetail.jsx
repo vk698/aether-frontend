@@ -3,6 +3,9 @@ import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
+// 🔥 API Base URL – uses environment variable or falls back to local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const AdminOrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ const AdminOrderDetail = () => {
 
     const fetchOrder = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/admin/orders/${id}`, {
+        const response = await axios.get(`${API_BASE_URL}/admin/orders/${id}`, {
           headers: { 'x-admin-key': token }
         });
         setOrder(response.data);
@@ -54,7 +57,7 @@ const AdminOrderDetail = () => {
 
     try {
       await axios.patch(
-        `http://localhost:5000/api/admin/orders/${id}/status`,
+        `${API_BASE_URL}/admin/orders/${id}/status`,
         { status: newStatus },
         { headers: { 'x-admin-key': token } }
       );
@@ -81,7 +84,7 @@ const AdminOrderDetail = () => {
 
     try {
       await axios.patch(
-        `http://localhost:5000/api/admin/orders/${id}/delivery-date`,
+        `${API_BASE_URL}/admin/orders/${id}/delivery-date`,
         { estimatedDeliveryDate: deliveryDate },
         { headers: { 'x-admin-key': token } }
       );
@@ -101,7 +104,7 @@ const AdminOrderDetail = () => {
     if (!token) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/orders/${id}`, {
+      await axios.delete(`${API_BASE_URL}/admin/orders/${id}`, {
         headers: { 'x-admin-key': token }
       });
       navigate('/admin');

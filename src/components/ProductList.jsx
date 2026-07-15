@@ -3,6 +3,9 @@ import axios from 'axios';
 import Product3DViewer from './Product3DViewer';
 import { useCart } from '../context/CartContext';
 
+// 🔥 API Base URL – uses environment variable or falls back to local
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +16,8 @@ const ProductList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        // 🔥 Use dynamic API base URL
+        const response = await axios.get(`${API_BASE_URL}/products`);
         setProducts(response.data);
         setLoading(false);
       } catch (err) {
