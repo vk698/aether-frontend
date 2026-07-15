@@ -1,0 +1,328 @@
+@import "tailwindcss";
+
+/* ============================================================
+   ELEGANT BLACK & GOLD DESIGN SYSTEM
+   Minimal | Luxurious | Refined
+   ============================================================ */
+
+/* ---------- Google Fonts ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@200;300;400;500;600&display=swap');
+
+/* ---------- Base Styles ---------- */
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background: #050505;
+  color: #f5f0eb;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ---------- Custom Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 10px;
+}
+
+/* ---------- Typography Helpers ---------- */
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+.font-sans {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* ---------- Text Shadows ---------- */
+.text-shadow-gold {
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+}
+.text-shadow-royal {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+.bg-royal-matte { background: #050505; }
+.text-gold-royal { color: #D4AF37; }
+.border-gold-royal { border-color: #D4AF37; }
+.bg-gold-royal { background: #D4AF37; }
+.from-gold-royal { --tw-gradient-from: #D4AF37; }
+.to-gold-champagne { --tw-gradient-to: #E5C76B; }
+
+/* Glassmorphism */
+.glass-royal {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Shadows */
+.shadow-royal {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8), 0 0 60px rgba(212, 175, 55, 0.03);
+}
+
+/* Marble Texture (very subtle) */
+.bg-marble {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes fade-up-royal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up-royal {
+  animation: fade-up-royal 0.8s ease-out forwards;
+}
+
+/* Gold Dust */
+.gold-dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: radial-gradient(circle, #d4af37, transparent);
+  border-radius: 50%;
+  animation: float-gold 10s ease-in-out infinite alternate;
+  opacity: 0;
+}
+@keyframes float-gold {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  50% { opacity: 0.6; transform: translateY(-80px) scale(1.5); }
+  100% { opacity: 0; transform: translateY(-150px) scale(0.8); }
+}
+
+/* Shimmer */
+@keyframes shimmer-gold {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer-gold {
+  animation: shimmer-gold 10s linear infinite;
+}
+
+/* Pulse for cart badge */
+@keyframes pulse-royal {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+  50% { transform: scale(1.1); box-shadow: 0 0 25px rgba(212, 175, 55, 0.6); }
+}
+.animate-pulse-royal {
+  animation: pulse-royal 2s ease-in-out infinite;
+}
+
+/* Modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+.animate-scale-up {
+  animation: scaleUp 0.3s ease-out;
+}
+
+/* ============================================================
+   3D TILT CARD PRESET
+   ============================================================ */
+.perspective-600 {
+  perspective: 600px;
+}
+.transform-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* ============================================================
+   ELEGANT BLACK & GOLD CARD
+   Clean | Spacious | Premium
+   ============================================================ */
+
+.shiny-card {
+  position: relative;
+  background: linear-gradient(145deg, #111111, #1a1a1a);
+  border-radius: 20px;
+  padding: 1.75rem;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  transition: all 0.4s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Subtle gloss */
+.shiny-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.shiny-card:hover::before {
+  opacity: 1;
+}
+
+/* Gold border (simple, elegant) */
+.shiny-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 30%, #d4af37 50%, transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.4;
+  transition: opacity 0.5s ease;
+  z-index: 0;
+}
+
+.shiny-card:hover::after {
+  opacity: 1;
+}
+.shiny-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* Image */
+.shiny-card .card-image {
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  background: #0a0a0a;
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  transition: border-color 0.4s ease;
+}
+.shiny-card:hover .card-image {
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
+/* Title */
+.shiny-card .card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #f5f0eb;
+  margin-top: 1rem;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  z-index: 2;
+  position: relative;
+}
+
+/* Meta */
+.shiny-card .card-meta {
+  font-size: 0.8rem;
+  color: #aaa;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  margin-top: 0.2rem;
+  z-index: 2;
+  position: relative;
+}
+
+/* Price */
+.shiny-card .card-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #d4af37;
+  margin-top: 0.5rem;
+  z-index: 2;
+  position: relative;
+}
+
+/* Button */
+.shiny-card .card-btn {
+  background: linear-gradient(135deg, #d4af37, #f5e6d0);
+  color: #050505;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  width: 100%;
+  margin-top: 1rem;
+  z-index: 2;
+  position: relative;
+}
+.shiny-card .card-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 28px rgba(212, 175, 55, 0.4);
+  background: linear-gradient(135deg, #f5e6d0, #d4af37);
+}
+.shiny-card .card-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Spacing for details */
+.shiny-card .card-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: 0.5rem;
+  z-index: 2;
+  position: relative;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .shiny-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+  .shiny-card .card-image {
+    height: 180px;
+  }
+  .shiny-card .card-title {
+    font-size: 1rem;
+  }
+  .shiny-card .card-price {
+    font-size: 1.2rem;
+  }
+  .shiny-card .card-btn {
+    font-size: 0.75rem;
+    padding: 0.6rem 1.25rem;
+  }
+}
