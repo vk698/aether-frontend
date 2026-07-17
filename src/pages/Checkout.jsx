@@ -5,29 +5,80 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// 🔥 API Base URL – uses environment variable or falls back to local
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const Checkout = () => {
   const { cartItems, getTotalPrice, clearCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth(); // 🔥 Get user
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [locating, setLocating] = useState(false);
 
+  // 🔥 Email is auto-filled from logged-in user
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: user?.name || '',
+    email: user?.email || '',  // Auto-filled, will be read-only
     phone: '',
     address: '',
     city: '',
     pincode: '',
-    state: ''
+    state: '',
+    locationLat: '',
+    locationLng: ''
   });
 
-  // Check if user is authenticated
+  // Auto-location function (same as before)
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setFormData(prev => ({
+          ...prev,
+          locationLat: latitude.toString(),
+          locationLng: longitude.toString()
+        }));
+
+        try {
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+          const data = await response.json();
+          if (data && data.locality) {
+            const addr = data;
+            setFormData(prev => ({
+              ...prev,
+              city: addr.city || addr.locality || '',
+              state: addr.principalSubdivision || '',
+              pincode: addr.postcode || '',
+              address: addr.street || addr.locality || ''
+            }));
+          } else {
+            alert('Could not fetch address. Please enter manually.');
+          }
+        } catch (err) {
+          console.error('Location error:', err);
+          alert('Failed to get address. Please enter manually.');
+        }
+        setLocating(false);
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        alert('Unable to retrieve location. Please enable location services.');
+        setLocating(false);
+      }
+    );
+  };
+
+  // Check if user is authenticated (already handled by ProtectedRoute, but keep for safety)
   if (!isAuthenticated) {
     return (
       <>
@@ -59,7 +110,6 @@ const Checkout = () => {
     );
   }
 
-  // Check if cart is empty
   if (cartItems.length === 0 && !orderPlaced) {
     return (
       <>
@@ -100,7 +150,9 @@ const Checkout = () => {
     setLoading(true);
     setError('');
 
-    for (let key in formData) {
+    // Validate required fields (except email, because it's auto-filled)
+    const requiredFields = ['name', 'phone', 'address', 'city', 'pincode', 'state'];
+    for (let key of requiredFields) {
       if (!formData[key].trim()) {
         setError('Please fill in all fields.');
         setLoading(false);
@@ -110,7 +162,15 @@ const Checkout = () => {
 
     try {
       const orderPayload = {
-        customer: formData,
+        customer: {
+          name: formData.name,
+          email: user.email, // 🔥 Always use logged-in user's email
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          pincode: formData.pincode,
+          state: formData.state
+        },
         items: cartItems.map(item => ({
           productId: item._id,
           name: item.name,
@@ -119,8 +179,12 @@ const Checkout = () => {
           image: item.images && item.images.length > 0 ? item.images[0] : ''
         })),
         totalAmount: getTotalPrice(),
-        paymentMethod: 'cod'
+        paymentMethod: 'cod',
+        locationLat: formData.locationLat || null,
+        locationLng: formData.locationLng || null
       };
+
+      console.log('📧 Sending order with customer email:', user.email);
 
       const token = localStorage.getItem('authToken');
       const config = {};
@@ -128,7 +192,6 @@ const Checkout = () => {
         config.headers = { Authorization: `Bearer ${token}` };
       }
 
-      // 🔥 Use dynamic API base URL
       const response = await axios.post(`${API_BASE_URL}/orders`, orderPayload, config);
       setOrderId(response.data.order._id);
       setOrderPlaced(true);
@@ -183,7 +246,6 @@ const Checkout = () => {
       </Helmet>
 
       <div className="min-h-screen bg-[#050505] text-[#f5f0eb] p-4 md:p-8 relative overflow-hidden font-sans">
-        {/* Background Decor */}
         <div className="absolute inset-0 pointer-events-none opacity-20 bg-marble z-0"></div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#d4af37]/5 blur-3xl rounded-full z-0"></div>
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#d4af37]/3 blur-3xl rounded-full z-0"></div>
@@ -249,17 +311,17 @@ const Checkout = () => {
                     />
                   </div>
 
+                  {/* 🔥 Email field – read-only, auto-filled from user */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-300 uppercase tracking-wider">Email *</label>
+                    <label className="block text-xs font-medium text-gray-300 uppercase tracking-wider">Email (Auto-filled)</label>
                     <input
                       type="email"
                       name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 bg-black/40 border border-[#d4af37]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4af37] text-gray-200 placeholder-gray-500 transition"
-                      placeholder="you@example.com"
-                      required
+                      value={user?.email || ''}
+                      readOnly
+                      className="w-full px-4 py-2 bg-black/60 border border-[#d4af37]/30 rounded-lg text-gray-400 cursor-not-allowed"
                     />
+                    <p className="text-[10px] text-gray-500 mt-1">Order confirmation will be sent to this email.</p>
                   </div>
 
                   <div>
@@ -274,6 +336,16 @@ const Checkout = () => {
                       required
                     />
                   </div>
+
+                  {/* 🔥 Auto-Location Button */}
+                  <button
+                    type="button"
+                    onClick={getCurrentLocation}
+                    disabled={locating}
+                    className="w-full py-2 rounded-full border border-[#d4af37]/40 text-gray-300 hover:bg-[#d4af37]/10 transition text-xs tracking-widest flex items-center justify-center gap-2"
+                  >
+                    <span>{locating ? '⏳ Locating...' : '📍 Use Current Location'}</span>
+                  </button>
 
                   <div>
                     <label className="block text-xs font-medium text-gray-300 uppercase tracking-wider">Address *</label>
